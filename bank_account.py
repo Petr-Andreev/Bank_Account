@@ -1,15 +1,41 @@
-# Нужно реализовать класс BankAccount, описывающий банковский счёт простого вида. У счёта должны быть:
-#     владелец счёта (строка, имя);
-#     номер счёта (строка или число);
-#     текущий баланс (число, не может быть отрицательным);
-# При создании счёта баланс может задаваться, а если не задан — считается 0.
-#
-# Класс BankAccount должен уметь:
-#
-# Создавать новый счёт в конструкторе init
-# deposit(amount) — пополнение счёта на сумму amount.
-# withdraw(amount) — снятие денег со счёта. Нельзя уйти в минус.
-# transferto(otheraccount, amount) — перевод денег на другой счёт BankAccount.
-# info() — возвращать строку с краткой информацией о счёте
-# @classmethod def getaccountscreated(cls) — возвращает количество созданных счетов.
+class BankAccount():
+    accounts_created = 0
 
+    def __init__(self, account_owner: str, account_number: str, account_balance: float | int = 0):
+        if account_balance < 0:
+            raise ValueError("Bank account balance cannot be negative")
+        BankAccount.accounts_created += 1
+        self.account_number = account_number
+        self.account_owner = account_owner
+        self._balance = account_balance
+
+    def __repr__(self):
+        return f"BankAccount({self.account_owner}, {self.account_number}, {self._balance})"
+
+    def deposit(self, amount: float | int) -> None:
+        if amount <= 0:
+            raise ValueError("Amount cannot be negative")
+        self._balance += amount
+
+    def withdraw(self, amount: float | int) -> None:
+        if amount <= 0:
+            raise ValueError("Withdrawal amount must be positive")
+        if amount > self._balance:
+            raise ValueError("Insufficient funds for withdrawal")
+        self._balance -= amount
+
+    def transfer_to(self, other_account: 'BankAccount', amount: float | int) -> None:
+        if not isinstance(other_account, BankAccount):
+            raise TypeError("Can only transfer to BankAccount instance")
+        try:
+            self.withdraw(amount)
+            other_account.deposit(amount)
+        except ValueError as e:
+            raise ValueError(f"Transfer failed: {e}")
+
+    def info(self) -> str:
+        return f"Bank account: {self.account_owner}, {self.account_number}, {self._balance}"
+
+    @classmethod
+    def get_accounts_created(cls):
+        return cls.accounts_created
