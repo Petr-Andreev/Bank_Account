@@ -39,3 +39,6 @@ class BankAccount():
     @classmethod
     def get_accounts_created(cls):
         return cls.accounts_created
+
+
+bank_account = BankAccount(account_owner='Petr A', account_number='416515644544', account_balance=10000)
